@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.jqgrid.service.impl.JqgridMapper">
+	<select id="selectJqgridList" parameterType="egovMap" resultType="egovMap">
+		SELECT  a.*
+	      FROM  (
+			SELECT  a.*,
+			        ROWNUM rnum,
+			        FLOOR((ROWNUM - 1) /#{rows} + 1) pageNumber
+			  FROM  (
+					SELECT  seq
+					     , name
+						 , phone
+						 , address
+						 , etcc
+						 , gender
+					  FROM jqgrid_start
+					 WHERE 1=1
+					 <if test='serviceImplYn != null'>
+						 <choose>
+						 	<when test='serviceImplYn == "A"'>
+						 		AND name = 'hanq'
+						 	</when>
+						   	<when test='serviceImplYn == "B"'>
+						 		AND name = 'shink'
+						 	</when>
+						 	<when test='serviceImplYn == "D"'>
+						 		AND name = 'rrrr'
+						 	</when>
+					 		<otherwise>
+					 		</otherwise>
+						 </choose>
+					</if>
+				 ORDER BY seq ASC
+					) a
+				) a
+	       WHERE  a.pageNumber = #{page}
+	    order by a.rnum
+	</select>
+	
+	<select id="selectJqgridListCnt" parameterType="egovMap" resultType="egovMap">
+		SELECT  count(*) totalTotCnt
+        	  , CEIL(count(*) / #{rows}) totalPage
+		  FROM  jqgrid_start
+		 WHERE  1=1
+	  ORDER BY  seq ASC
+	</select>
+	
+	<select id="selectJqgridList2" parameterType="jqgridVO" resultType="egovMap">
+		SELECT  a.*
+	      FROM  (
+			SELECT  a.*,
+			        ROWNUM rnum,
+			        FLOOR((ROWNUM - 1) /#{rows} + 1) pageNumber
+			  FROM  (
+					SELECT  seq
+					     , name
+						 , phone
+						 , address
+						 , etcc
+						 , gender
+					  FROM jqgrid_start
+					 WHERE 1=1
+					 <if test='serviceImplYn != null'>
+						 <choose>
+						 	<when test='serviceImplYn == "A"'>
+						 		AND name = 'hanq'
+						 	</when>
+						   	<when test='serviceImplYn == "B"'>
+						 		AND name = 'shink'
+						 	</when>
+						 	<when test='serviceImplYn == "D"'>
+						 		AND name = 'rrrr'
+						 	</when>
+					 		<otherwise>
+					 		</otherwise>
+						 </choose>
+					</if>
+				 ORDER BY seq ASC
+					) a
+				) a
+	       WHERE  a.pageNumber = #{page}
+	    order by a.rnum
+	</select>
+	
+	<select id="selectJqgridListCnt2" parameterType="jqgridVO" resultType="egovMap">
+		SELECT  count(*) totalTotCnt
+        	  , CEIL(count(*) / #{rows}) totalPage
+		  FROM  jqgrid_start
+		 WHERE  1=1
+	  ORDER BY  seq ASC
+	</select>
+	
+	
+	<insert id="insertJqgridList" parameterType="map">
+	<selectKey resultType="String" keyProperty="seq" order="BEFORE">
+		SELECT NVL(MAX(SEQ),0)+1	AS seqNo
+		FROM jqgrid_start
+	</selectKey>
+		INSERT INTO jqgrid_start
+				(SEQ
+				 ,NAME
+				 ,PHONE
+				 ,ADDRESS
+				 ,ETCC
+				 ,GENDER)
+		VALUES
+		(#{seq},
+		#{name},
+		#{phone},
+		#{address},
+		#{etcc},
+		#{gender})
+	</insert>
+	
+	<update id="updateJqgridList" parameterType="map">
+		UPDATE jqgrid_start
+		SET   NAME 	= #{name}
+		, PHONE 	= #{phone}
+		, ADDRESS 	= #{address}
+		, ETCC 		= #{etcc}
+		, GENDER  	= #{gender}
+		WHERE SEQ 	= #{seq}
+	</update>
+	
+	<delete id ="deleteJqgridList" parameterType="map">
+		DELETE FROM jqgrid_start WHERE SEQ=#{seq}
+	</delete>
+	
+	<select id ="selectBrandCombo" parameterType="map" resultType="egovMap">
+		SELECT BRAND_CD
+		 	 , BRAND_NM
+		FROM   T_BRAND
+		WHERE  1=1
+		<if test='brandCd != null and brandCd != ""'>
+			AND BRAND_CD = #{brandCd}
+		</if>
+	</select>
+	
+	<select id ="selectBrandList" parameterType="map" resultType="egovMap">
+		SELECT  a.*
+		      FROM  (
+		      SELECT  a.*,
+		                ROWNUM rnum,
+		                FLOOR((ROWNUM - 1) /#{rows} + 1) pageNumber
+		          FROM  (
+		SELECT BRAND_CD
+		 , BRAND_NM
+		 , SORT_NO
+		 , INS_DATE
+		 , INS_ID
+		FROM T_BRAND
+		WHERE 1=1
+		<if test='brandCd != null and brandCd != ""'>
+		AND BRAND_CD = #{brandCd}
+		</if>
+		ORDER BY SORT_NO ASC
+		) a
+		) a
+		     WHERE  a.pageNumber = #{page}
+		   order by a.rnum
+	</select>
+	
+	<select id="selectBrandListCnt" parameterType="map" resultType="egovMap">
+		SELECT  count(*) totalTotCnt
+		          , CEIL(count(*) / #{rows}) totalPage
+		  FROM  T_BRAND
+		  WHERE  1=1
+		    ORDER BY SORT_NO ASC
+	</select>
+	
+	
+	<insert id="insertBrand" parameterType="map">
+		INSERT INTO t_brand 
+		(brand_cd
+		, brand_nm
+		, sort_no
+		, ins_date
+		, ins_id) 
+		VALUES (#{brandCd}
+		, #{brandNm}
+		, #{sortNo}
+		, sysdate
+		, #{insId}
+		)
+	</insert>
+	
+	<update id="updateBrand" parameterType="map">
+		UPDATE t_brand
+		SET   brand_nm = #{brandNm}
+		, sort_no = #{sortNo}
+		WHERE brand_cd = #{brandCd}
+	</update>
+	
+	<select id ="selectPrdList" parameterType="map" resultType="egovMap">
+		SELECT  a.*
+		      FROM  (
+		      SELECT  a.*,
+		                ROWNUM rnum,
+		                FLOOR((ROWNUM - 1) /#{rows} + 1) pageNumber
+		          FROM  (
+		SELECT P.PRD_CD
+		 , P.PRD_NM
+		 , B.BRAND_NM
+		 , P.BRAND_CD
+		 , B.INS_DATE 
+		 , B.INS_ID
+		FROM  T_BRAND B
+		, T_PRD P
+		WHERE B.BRAND_CD = P.BRAND_CD
+		<if test='brandCd != null and brandCd != ""'>
+			AND P.BRAND_CD = #{brandCd}
+		</if>
+		ORDER BY P.PRD_CD ASC
+		) a
+		) a
+		     WHERE  a.pageNumber = #{page}
+		   order by a.rnum
+	</select>
+	
+	<select id="selectPrdListCnt" parameterType="map" resultType="egovMap">
+		SELECT  count(*) totalTotCnt
+		          , CEIL(count(*) / #{rows}) totalPage
+		  FROM  T_PRD
+		  WHERE  1=1
+		    ORDER BY PRD_CD ASC
+	</select>
+	
+	<insert id="insertPrd" parameterType="map">
+		INSERT INTO t_prd 
+		(prd_cd
+		, prd_nm
+		, brand_cd
+		, ins_date
+		, ins_id) 
+		VALUES (
+		  #{prdCd}
+		, #{prdNm}
+		, #{brandCd}
+		, sysdate
+		, #{insId}
+		)
+	</insert>
+	
+	<update id="updatePrd" parameterType="map">
+		UPDATE t_prd
+		SET   prd_nm = #{prd_nm}
+		WHERE prd_cd = #{prdCd}
+	</update>
+	
+</mapper>
